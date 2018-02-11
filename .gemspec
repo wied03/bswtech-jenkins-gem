@@ -16,4 +16,5 @@ Gem::Specification.new do |s|
   s.email = 'brady@bswtechconsulting.com'
   s.add_runtime_dependency 'rubyzip'
   s.add_runtime_dependency 'sinatra'
+  s.executables << 'jenkins_bundle_install'
 end
