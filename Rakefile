@@ -10,7 +10,6 @@ end
 desc 'Run unit tests'
 RSpec::Core::RakeTask.new(:spec) do |task|
   task.pattern = 'lib/**/*_spec.rb'
-  task.rspec_opts = '-I spec'
 end
 
 desc 'Cleans up'
