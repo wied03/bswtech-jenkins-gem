@@ -52,7 +52,7 @@ get '/gems/:gem_filename' do |gem_filename|
 end
 
 # TODO: Somewhere, use the Jenkins metadata JSON to verify if any security problems exist
-
+# TODO: Move this to a separate class to make it more testable/shareable
 def add_hpi_to_gem(gem, index_gem_path)
   spec = gem.spec
   metadata = spec.metadata
