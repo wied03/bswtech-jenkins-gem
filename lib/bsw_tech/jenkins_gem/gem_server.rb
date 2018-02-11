@@ -111,7 +111,7 @@ def build_index(index_dir, gems_dir)
   jenkins_versions = BswTech::JenkinsGem::JenkinsListFetcher.get_available_versions
 
   parser = begin
-    update_response = fetch('http://updates.jenkins-ci.org/update-center.json').body
+    update_response = fetch('https://updates.jenkins-ci.org/update-center.json').body
     BswTech::JenkinsGem::UpdateJsonParser.new(update_response, jenkins_versions)
   rescue StandardError => e
     puts "Problem fetching Jenkins info #{e}"
