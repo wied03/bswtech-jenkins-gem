@@ -1,7 +1,6 @@
 module BswTech
   module JenkinsGem
     class UpdateJsonParser
-      SEPARATOR = ': '
       PREFIX = 'jenkins-plugin-proxy'
       DEPENDENCY_REMAPS = {
         # For some reason, Jenkins seems to reference invalid dependency versions sometimes
