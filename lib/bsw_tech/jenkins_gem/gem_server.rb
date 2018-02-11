@@ -74,7 +74,7 @@ def add_hpi_to_gem(gem, index_gem_path)
     temp_file.rewind
     expected_sha = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_SHA1]
     actual = signature.base64digest
-    fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual  == expected_sha
+    fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual == expected_sha
     begin
       Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
         gem.extract_files local_temp_path
@@ -86,7 +86,9 @@ def add_hpi_to_gem(gem, index_gem_path)
         end
         Dir.chdir(local_temp_path) do
           spec.files = Dir['**/*']
-          built_gem_path = ::Gem::Package.build spec
+          built_gem_path = with_quiet_gem do
+            ::Gem::Package.build spec
+          end
           puts "Copying #{built_gem_path} to #{index_gem_path}"
           FileUtils.copy built_gem_path, index_gem_path
         end
