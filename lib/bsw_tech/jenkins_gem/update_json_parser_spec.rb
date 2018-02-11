@@ -197,7 +197,7 @@ updateCenter.post(
     end
 
     context 'full file' do
-      let(:update_json_blob) {File.read 'spec/ruby_code/update_full.json'}
+      let(:update_json_blob) {File.read 'spec/update_full.json'}
 
       subject {parser.gem_listing}
 
