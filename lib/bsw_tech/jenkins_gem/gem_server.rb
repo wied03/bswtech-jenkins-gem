@@ -121,6 +121,7 @@ def build_index(index_dir, gems_dir)
   end
 
   gem_list = parser.gem_listing
+  # TODO: See comment below re: updated if already there
   FileUtils.rm_rf index_dir
   FileUtils.mkdir_p index_dir
   FileUtils.mkdir_p gems_dir
@@ -137,6 +138,8 @@ def build_index(index_dir, gems_dir)
       end
     end
   end
+  # https://blog.packagecloud.io/eng/2015/12/15/rubygem-index-internals/
+  # TODO: Can this be updated if already there?
   Gem::Indexer.new(index_dir,
                    { build_modern: true }).generate_index
 end
