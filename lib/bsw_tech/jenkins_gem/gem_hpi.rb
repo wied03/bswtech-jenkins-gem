@@ -5,8 +5,14 @@ module BswTech
     class GemHpi
       include GemUtil
 
-      def initialize(gem)
+      def initialize(gem,
+                     certificate_path,
+                     private_key_path)
         @gem = gem
+        @private_key_path = private_key_path
+        @certificate_path = certificate_path
+        ENV['SIGN_GEM'] ||= '1'
+        @do_sign = ENV['SIGN_GEM'] == '1'
       end
 
       def merge_hpi(index_gem_path)
@@ -23,6 +29,7 @@ module BswTech
             Dir.chdir(local_temp_path) do
               spec.files = Dir['**/*']
               built_gem_path = with_quiet_gem do
+                sign_gem(spec) if @do_sign
                 ::Gem::Package.build spec
               end
               puts "Copying #{built_gem_path} to #{index_gem_path}"
@@ -33,6 +40,11 @@ module BswTech
       end
 
       private
+
+      def sign_gem(spec)
+        spec.cert_chain = [@certificate_path]
+        spec.signing_key = @private_key_path
+      end
 
       def with_downloaded_hpi(spec)
         metadata = spec.metadata

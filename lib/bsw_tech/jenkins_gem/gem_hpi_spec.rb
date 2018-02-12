@@ -6,7 +6,10 @@ fdescribe BswTech::JenkinsGem::GemHpi do
 
   describe '#merge_hpi' do
     subject(:final_gem) do
-      gem_hpi = BswTech::JenkinsGem::GemHpi.new(gem)
+      spec_dir = File.join(Dir.pwd, 'spec')
+      gem_hpi = BswTech::JenkinsGem::GemHpi.new(gem,
+                                                File.join(spec_dir, 'repo_util_cert.pem'),
+                                                File.join(spec_dir, 'repo_util_key.pem'))
       output_path = File.join(@local_temp_path, 'output')
       FileUtils.mkdir_p output_path
       gem_hpi.merge_hpi(output_path)
@@ -49,12 +52,34 @@ fdescribe BswTech::JenkinsGem::GemHpi do
     end
 
     context 'valid' do
+      before {ENV['SIGN_GEM'] = '1'}
       let(:actual_sha) {'G3rmp5e32wmL2mFnTI3QN+WCDtE='}
 
       describe '#files' do
         subject {final_gem.files}
 
         its(:length) {is_expected.to eq 10}
+      end
+
+      it 'signature' do
+        expect(final_gem.cert_chain.length).to eq 1
+        expect(final_gem.signing_key).to_not be_nil
+      end
+    end
+
+    context 'signature disabled' do
+      before {ENV['SIGN_GEM'] = ''}
+      let(:actual_sha) {'G3rmp5e32wmL2mFnTI3QN+WCDtE='}
+
+      describe '#files' do
+        subject {final_gem.files}
+
+        its(:length) {is_expected.to eq 10}
+      end
+
+      it 'signature' do
+        expect(final_gem.cert_chain.length).to eq 0
+        expect(final_gem.signing_key).to be_nil
       end
     end
 
