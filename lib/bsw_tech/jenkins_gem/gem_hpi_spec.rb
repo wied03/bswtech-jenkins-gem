@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'bsw_tech/jenkins_gem/gem_hpi'
 
-fdescribe BswTech::JenkinsGem::GemHpi do
+describe BswTech::JenkinsGem::GemHpi do
   include BswTech::JenkinsGem::GemUtil
 
   let(:spec_dir) {File.join(Dir.pwd, 'spec')}

@@ -43,6 +43,8 @@ describe 'GEM Server' do
       describe 'GEM' do
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
         its(:files) {is_expected.to eq []}
+        # TODO: Signed
+        # TODO: Uploaded
       end
     end
 
@@ -53,7 +55,7 @@ describe 'GEM Server' do
       its(:status) {is_expected.to eq 404}
     end
 
-    context 'found' do
+    context 'found, not in Gemfury yet' do
       let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
       its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
 
@@ -61,6 +63,14 @@ describe 'GEM Server' do
         expect(gem.files.length).to eq 10
         expect(gem.files[0]).to eq 'META-INF/MANIFEST.MF'
       end
+    end
+
+    context 'found, already in Gemfury' do
+      pending 'write it'
+    end
+
+    context 'signature disabled' do
+      pending 'write this'
     end
   end
 end
