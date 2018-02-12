@@ -5,9 +5,7 @@ fdescribe BswTech::JenkinsGem::GemHpi do
   include BswTech::JenkinsGem::GemUtil
 
   let(:spec_dir) {File.join(Dir.pwd, 'spec')}
-  let(:sign_gems) {true}
   let(:gem_hpi) do
-    ENV['SIGN_GEM'] = sign_gems ? '1' : ''
     BswTech::JenkinsGem::GemHpi.new(gem_path,
                                     File.join(spec_dir, 'repo_util_cert.pem'),
                                     File.join(spec_dir, 'repo_util_key.pem'))
@@ -37,6 +35,8 @@ fdescribe BswTech::JenkinsGem::GemHpi do
     end
   end
 
+  let(:actual_sha) {'G3rmp5e32wmL2mFnTI3QN+WCDtE='}
+
   subject(:final_gem) do
     puts 'Parsing finished GEM product'
     file = File.join(@local_temp_path, 'some_plugin-1.2.3.gem')
@@ -47,14 +47,14 @@ fdescribe BswTech::JenkinsGem::GemHpi do
     package.spec
   end
 
-  describe '#merge_hpi' do
-    around do |example|
-      Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
-        @local_temp_path = local_temp_path
-        example.run
-      end
+  around do |example|
+    Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
+      @local_temp_path = local_temp_path
+      example.run
     end
+  end
 
+  describe '#merge_hpi' do
     before {do_merge}
 
     def do_merge
@@ -63,32 +63,10 @@ fdescribe BswTech::JenkinsGem::GemHpi do
     end
 
     context 'valid' do
-      let(:actual_sha) {'G3rmp5e32wmL2mFnTI3QN+WCDtE='}
-
       describe '#files' do
         subject {final_gem.files}
 
         its(:length) {is_expected.to eq 10}
-      end
-
-      it 'signature' do
-        expect(final_gem.cert_chain.length).to eq 1
-      end
-    end
-
-    context 'signature disabled' do
-      let(:sign_gems) {false}
-      let(:actual_sha) {'G3rmp5e32wmL2mFnTI3QN+WCDtE='}
-
-      describe '#files' do
-        subject {final_gem.files}
-
-        its(:length) {is_expected.to eq 10}
-      end
-
-      it 'signature' do
-        expect(final_gem.cert_chain.length).to eq 0
-        expect(final_gem.signing_key).to be_nil
       end
     end
 
@@ -103,6 +81,13 @@ fdescribe BswTech::JenkinsGem::GemHpi do
         expect {gem_hpi.merge_hpi}.to raise_error /ZIP failed SHA1 check/
       end
     end
-    pending 'write this'
+  end
+
+  describe '#sign_gem' do
+    before {gem_hpi.sign_gem}
+
+    it 'signature' do
+      expect(final_gem.cert_chain.length).to eq 1
+    end
   end
 end

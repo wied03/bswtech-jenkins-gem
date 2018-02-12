@@ -12,39 +12,43 @@ module BswTech
         @gem = Gem::Package.new gem_path
         @private_key_path = private_key_path
         @certificate_path = certificate_path
-        ENV['SIGN_GEM'] ||= '1'
-        @do_sign = ENV['SIGN_GEM'] == '1'
       end
 
       def merge_hpi
         with_downloaded_hpi do |temp_file|
-          Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
-            @gem.extract_files local_temp_path
+          with_gem_to_modify do |local_temp_path, spec|
             Zip::File.open(temp_file) do |zip_file|
               zip_file.each do |entry|
                 full_path = File.join(local_temp_path, entry.name)
                 entry.extract(full_path)
+                spec.files = Dir['**/*']
               end
-            end
-            Dir.chdir(local_temp_path) do
-              spec = @gem.spec
-              spec.files = Dir['**/*']
-              built_gem_path = with_quiet_gem do
-                sign_gem if @do_sign
-                ::Gem::Package.build spec
-              end
-              FileUtils.copy built_gem_path, @gem_path
             end
           end
         end
       end
 
+      def sign_gem
+        with_gem_to_modify do |_, spec|
+          spec.cert_chain = [@certificate_path]
+          spec.signing_key = @private_key_path
+        end
+      end
+
       private
 
-      def sign_gem
-        spec = @gem.spec
-        spec.cert_chain = [@certificate_path]
-        spec.signing_key = @private_key_path
+      def with_gem_to_modify
+        Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
+          @gem.extract_files local_temp_path
+          Dir.chdir(local_temp_path) do
+            spec = @gem.spec
+            yield local_temp_path, spec
+            built_gem_path = with_quiet_gem do
+              ::Gem::Package.build spec
+            end
+            FileUtils.copy built_gem_path, @gem_path
+          end
+        end
       end
 
       def with_downloaded_hpi
