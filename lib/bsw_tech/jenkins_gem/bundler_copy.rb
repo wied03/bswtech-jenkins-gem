@@ -3,7 +3,7 @@ require 'yaml'
 require 'fileutils'
 require 'bsw_tech/jenkins_gem/update_json_parser'
 
-# TODO: When gem hpi files are added, sign it and upload to Gemfury
+# TODO: When gem hpi files are added, and upload to Gemfury
 # TODO: Provide a separate one off command to download an hpi and upload a built gem for that to fury. can use previous code that interprets manifest
 # TODO: Use bins for current shell script
 dir = ENV['PLUGIN_DEST_DIR']

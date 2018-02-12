@@ -16,8 +16,7 @@ module BswTech
       end
 
       def merge_hpi(index_gem_path)
-        spec = @gem.spec
-        with_downloaded_hpi(spec) do |temp_file|
+        with_downloaded_hpi do |temp_file|
           Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
             @gem.extract_files local_temp_path
             Zip::File.open(temp_file) do |zip_file|
@@ -27,9 +26,10 @@ module BswTech
               end
             end
             Dir.chdir(local_temp_path) do
+              spec = @gem.spec
               spec.files = Dir['**/*']
               built_gem_path = with_quiet_gem do
-                sign_gem(spec) if @do_sign
+                sign_gem if @do_sign
                 ::Gem::Package.build spec
               end
               puts "Copying #{built_gem_path} to #{index_gem_path}"
@@ -41,13 +41,14 @@ module BswTech
 
       private
 
-      def sign_gem(spec)
+      def sign_gem
+        spec = @gem.spec
         spec.cert_chain = [@certificate_path]
         spec.signing_key = @private_key_path
       end
 
-      def with_downloaded_hpi(spec)
-        metadata = spec.metadata
+      def with_downloaded_hpi()
+        metadata = @gem.spec.metadata
         jenkins_name = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_NAME]
         jenkins_version = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_VERSION]
         url = "https://updates.jenkins.io/download/plugins/#{jenkins_name}/#{jenkins_version}/#{jenkins_name}.hpi"

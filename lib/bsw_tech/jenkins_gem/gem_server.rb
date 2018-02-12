@@ -29,16 +29,15 @@ get '/gems/:gem_filename' do |gem_filename|
   next [404, "Unable to find gem #{gem_filename}"] unless File.exists? path
   gem = ::Gem::Package.new path
   spec = gem.spec
+  # TODO: Sign Jenkins GEM as well and upload it
   unless spec.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
+    # Files might already be there
     add_hpi_to_gem gem, path unless spec.files.any?
   end
   File.open(path, 'rb')
 end
 
 # TODO: Somewhere, use the Jenkins metadata JSON to verify if any security problems exist
-def add_hpi_to_gem(gem, index_gem_path)
-
-end
 
 # TODO: ETag based index expire?
 def build_index(index_dir, gems_dir)
