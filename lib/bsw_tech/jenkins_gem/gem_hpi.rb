@@ -5,17 +5,18 @@ module BswTech
     class GemHpi
       include GemUtil
 
-      def initialize(gem,
+      def initialize(gem_path,
                      certificate_path,
                      private_key_path)
-        @gem = gem
+        @gem_path = gem_path
+        @gem = Gem::Package.new gem_path
         @private_key_path = private_key_path
         @certificate_path = certificate_path
         ENV['SIGN_GEM'] ||= '1'
         @do_sign = ENV['SIGN_GEM'] == '1'
       end
 
-      def merge_hpi(index_gem_path)
+      def merge_hpi
         with_downloaded_hpi do |temp_file|
           Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
             @gem.extract_files local_temp_path
@@ -32,8 +33,7 @@ module BswTech
                 sign_gem if @do_sign
                 ::Gem::Package.build spec
               end
-              puts "Copying #{built_gem_path} to #{index_gem_path}"
-              FileUtils.copy built_gem_path, index_gem_path
+              FileUtils.copy built_gem_path, @gem_path
             end
           end
         end
@@ -47,7 +47,7 @@ module BswTech
         spec.signing_key = @private_key_path
       end
 
-      def with_downloaded_hpi()
+      def with_downloaded_hpi
         metadata = @gem.spec.metadata
         jenkins_name = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_NAME]
         jenkins_version = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_VERSION]

@@ -7,13 +7,11 @@ fdescribe BswTech::JenkinsGem::GemHpi do
   describe '#merge_hpi' do
     subject(:final_gem) do
       spec_dir = File.join(Dir.pwd, 'spec')
-      gem_hpi = BswTech::JenkinsGem::GemHpi.new(gem,
+      gem_hpi = BswTech::JenkinsGem::GemHpi.new(gem_path,
                                                 File.join(spec_dir, 'repo_util_cert.pem'),
                                                 File.join(spec_dir, 'repo_util_key.pem'))
-      output_path = File.join(@local_temp_path, 'output')
-      FileUtils.mkdir_p output_path
-      gem_hpi.merge_hpi(output_path)
-      file = File.join(output_path, 'some_plugin-1.2.3.gem')
+      gem_hpi.merge_hpi
+      file = File.join(@local_temp_path, 'some_plugin-1.2.3.gem')
       fail 'Non existent GEM' unless File.exist? file
       package = with_quiet_gem do
         Gem::Package.new file
@@ -21,7 +19,7 @@ fdescribe BswTech::JenkinsGem::GemHpi do
       package.spec
     end
 
-    let(:gem) do
+    let(:gem_path) do
       spec = Gem::Specification.new do |s|
         s.name = 'some_plugin'
         s.summary = 'the details'
@@ -34,14 +32,12 @@ fdescribe BswTech::JenkinsGem::GemHpi do
         s.homepage = 'http://homepage'
         s.authors = ['unknown']
       end
-      input_path = File.join(@local_temp_path, 'input')
-      FileUtils.mkdir_p input_path
-      Dir.chdir(input_path) do
+      Dir.chdir(@local_temp_path) do
         with_quiet_gem do
           Gem::Package.build spec
         end
-        Gem::Package.new File.join(input_path, 'some_plugin-1.2.3.gem')
       end
+      File.join(@local_temp_path, 'some_plugin-1.2.3.gem')
     end
 
     around do |example|
