@@ -63,7 +63,6 @@ fdescribe BswTech::JenkinsGem::GemHpi do
 
       it 'signature' do
         expect(final_gem.cert_chain.length).to eq 1
-        expect(final_gem.signing_key).to_not be_nil
       end
     end
 
