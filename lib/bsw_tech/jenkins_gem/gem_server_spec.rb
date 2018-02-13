@@ -8,15 +8,18 @@ ENV['GEM_PRIVATE_KEY_PATH'] = File.join(spec_dir, 'repo_util_key.pem')
 require 'bsw_tech/jenkins_gem/gem_server'
 
 describe 'GEM Server' do
+  include Rack::Test::Methods
+
   before(:context) {FileUtils.rm_rf index_directory}
   after(:context) {FileUtils.rm_rf index_directory}
-  include Rack::Test::Methods
+
   let(:fury_mock) {instance_double(Gemfury::Client)}
   let(:existing_versions) do
     Hash.new do |hash, key|
       hash[key] = []
     end
   end
+
   before do
     allow(Gemfury::Client).to receive(:new).and_return(fury_mock)
     @uploaded = []
@@ -31,7 +34,7 @@ describe 'GEM Server' do
   end
 
   def app
-    Sinatra::Application
+    BswTech::JenkinsGem::GemServer
   end
 
   describe 'specs' do
@@ -53,7 +56,9 @@ describe 'GEM Server' do
     before {get '/specs.4.8.gz'}
 
     subject(:gem) do
-      expect(response.ok?).to eq true
+      unless response.ok?
+        fail "Request failed! #{response.body}"
+      end
       package = ::Gem::Package.new StringIO.new(response.body)
       package.spec
     end
