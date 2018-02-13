@@ -255,6 +255,37 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
                                           })}
       end
 
+      context 'no authors' do
+        let(:manifest_contents) do
+          <<-CODE
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: andresrc
+Build-Jdk: 1.8.0_141
+Extension-Name: aws-credentials
+Specification-Title: The Jenkins Plugins Parent POM Project
+Implementation-Title: aws-credentials
+Implementation-Version: 1.23
+Group-Id: org.jenkins-ci.plugins
+Short-Name: aws-credentials
+Long-Name: CloudBees Amazon Web Services Credentials Plugin
+Url: https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+AWS+Credent
+ ials+Plugin
+Plugin-Version: 1.23
+Hudson-Version: 1.625.1
+Jenkins-Version: 1.625.1
+Plugin-Dependencies: credentials:2.1.16,aws-java-sdk:1.10.16,credentia
+ ls-binding:1.7
+Plugin-Developers: 
+
+
+          CODE
+        end
+        its(:authors) do
+          is_expected.to eq ['unknown']
+        end
+      end
 
       describe '#dependencies' do
         subject(:deps) {gem_spec.dependencies}

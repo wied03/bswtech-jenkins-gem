@@ -73,7 +73,8 @@ module BswTech
             METADATA_JENKINS_NAME => plugin_name
           }
           s.homepage = properties['Url']
-          s.authors = properties['Plugin-Developers'].split(',')
+          developers = properties['Plugin-Developers'].split(',')
+          s.authors = developers.any? ? developers : ['unknown']
           # Handle no dependency cases
           dependencies = properties['Plugin-Dependencies'] || ''
           dependencies.split(',').each do |dependency_string|
