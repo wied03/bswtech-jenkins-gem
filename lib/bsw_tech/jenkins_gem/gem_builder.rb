@@ -12,6 +12,7 @@ module BswTech
       METADATA_JENKINS_NAME = 'jenkins_name'
       METADATA_JENKINS_VERSION = 'jenkins_version'
       METADATA_SHA1 = 'sha1'
+      SEPARATOR = ': '
 
       attr_reader :gem_listing
 
@@ -58,6 +59,38 @@ module BswTech
         new(gem_listing)
       end
 
+      def self.from_hpi(manifest_contents)
+        properties = get_prop_hash manifest_contents
+        gem_spec = Gem::Specification.new do |s|
+          plugin_name = properties['Extension-Name']
+          s.name = get_name(plugin_name)
+          s.description = properties['Specification-Title']
+          s.summary = properties['Long-Name']
+          jenkins_version = properties['Plugin-Version']
+          s.version = format_version(jenkins_version)
+          s.metadata = {
+            METADATA_JENKINS_VERSION => jenkins_version,
+            METADATA_JENKINS_NAME => plugin_name
+          }
+          s.homepage = properties['Url']
+          s.authors = properties['Plugin-Developers'].split(',')
+          properties['Plugin-Dependencies'].split(',').each do |dependency_string|
+            name_version, props = dependency_string.split ';'
+            props = props ? Hash[props.split(',').map {|kv| kv.split(':=')}] : {}
+            name, version = name_version.split(':')
+            dependency = {
+              'optional' => props['resolution'],
+              'version' => version,
+              'name' => name
+            }
+            add_dependency dependency, s
+          end
+          add_core_jenkins properties['Jenkins-Version'],
+                           s
+        end
+        new([gem_spec])
+      end
+
       def initialize(gem_listing)
         @gem_listing = gem_listing
       end
@@ -67,6 +100,25 @@ module BswTech
       private
 
       class << self
+        def get_prop_hash(manifest_contents)
+          consistent_lines = manifest_contents.split("\n").inject([]) do |line_array, current_line|
+            previous_line = line_array.pop
+            # Manifest lines are wrapped at a fixed boundary
+            new_lines = if current_line.start_with? ' '
+                          # Trim off the extra space
+                          [previous_line + current_line[1..-1]]
+                        else
+                          [previous_line, current_line]
+                        end
+            line_array + new_lines.compact
+          end
+
+          Hash[consistent_lines.map do |property_line|
+            parts = property_line.split SEPARATOR
+            [parts[0], parts[1..-1].join(SEPARATOR)]
+          end]
+        end
+
         def add_core_jenkins(version,
                              gem_spec)
           gem_spec.add_runtime_dependency get_name(JENKINS_CORE_PACKAGE),
