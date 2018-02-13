@@ -94,9 +94,5 @@ describe 'GEM Server' do
     context 'found, already in Gemfury' do
       pending 'write it'
     end
-
-    context 'signature disabled' do
-      pending 'write this'
-    end
   end
 end
