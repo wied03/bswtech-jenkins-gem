@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'bsw_tech/jenkins_gem/gem_server'
+require 'bsw_tech/jenkins_gem/bundler_copy'
+require 'bundler'
+require 'rake'
+
+ENV['INDEX_DIRECTORY'] = 'gem_index'
+ENV['GEM_CERTIFICATE_PATH'] = File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
+ENV['GEM_PRIVATE_KEY_PATH'] = File.join(ENV['ENCRYPTED_DIR'], 'gem-private_key.pem')
+ENV['PLUGIN_DEST_DIR'] = 'plugins_final'
+
+puts 'Starting Rack...'
+server_process = fork do
+  BswTech::JenkinsGem::GemServer.run!
+end
+
+begin
+  puts 'Running bundle install...'
+  Bundler.with_clean_env do
+    sh 'GEM_SEED_ENABLED=1 bundle install --trust-policy HighSecurity'
+  end
+ensure
+  puts 'Shutting down Rack server'
+  Process.kill 'TERM',
+                server_process
+end
+
+copy_gems

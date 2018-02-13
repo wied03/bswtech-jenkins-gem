@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sinatra', '~> 2.0'
   s.add_runtime_dependency 'gemfury', '~> 0.7'
   s.executables << 'jenkins_bundle_install'
+  s.executables << 'jenkins_seed'
 end
