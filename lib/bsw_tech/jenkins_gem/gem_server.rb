@@ -48,13 +48,13 @@ module BswTech
         gem = ::Gem::Package.new path
         spec = gem.spec
         hpi_util = BswTech::JenkinsGem::GemHpi.new(path, @cert_path, @private_key_path)
-        unless spec.cert_chain.any?
-          puts "Signing gem #{path}"
-          hpi_util.sign_gem
-        end
         unless spec.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
           # Files might already be there
           hpi_util.merge_hpi unless spec.files.any?
+        end
+        unless spec.cert_chain.any?
+          puts "Signing gem #{path}"
+          hpi_util.sign_gem
         end
         fury_client = Gemfury::Client.new user_api_key: @api_key
         existing_versions = begin
