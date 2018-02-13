@@ -19,4 +19,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'gemfury', '~> 0.7'
   s.executables << 'jenkins_bundle_install'
   s.executables << 'jenkins_seed'
+  s.executables << 'jenkins_manual_fetch'
 end

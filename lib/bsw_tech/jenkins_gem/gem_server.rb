@@ -9,7 +9,6 @@ require 'bsw_tech/jenkins_gem/jenkins_list_fetcher'
 require 'bsw_tech/jenkins_gem/gem_hpi'
 require 'zip'
 require 'tmpdir'
-require 'digest'
 require 'tempfile'
 require 'gemfury'
 

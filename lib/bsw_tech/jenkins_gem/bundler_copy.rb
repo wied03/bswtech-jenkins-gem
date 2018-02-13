@@ -4,7 +4,6 @@ require 'fileutils'
 require 'bsw_tech/jenkins_gem/gem_builder'
 
 def copy_gems
-  # TODO: Provide a separate one off command to download an hpi and upload a built gem for that to fury. can use previous code that interprets manifest
   dir = ENV['PLUGIN_DEST_DIR']
   fail 'Specify PLUGIN_DEST_DIR env variable' unless dir && !dir.empty?
   FileUtils.rm_rf dir

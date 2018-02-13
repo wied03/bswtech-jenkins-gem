@@ -1,4 +1,5 @@
 require 'bsw_tech/jenkins_gem/gem_util'
+require 'digest'
 
 module BswTech
   module JenkinsGem
@@ -70,7 +71,7 @@ module BswTech
         temp_file.rewind
         expected_sha = metadata[BswTech::JenkinsGem::GemBuilder::METADATA_SHA1]
         actual = signature.base64digest
-        fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual == expected_sha
+        fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless (actual == expected_sha) || !expected_sha
         yield temp_file
       ensure
         temp_file.close
