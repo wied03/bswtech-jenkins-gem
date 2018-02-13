@@ -28,6 +28,7 @@ describe 'GEM Server' do
     end
     allow(fury_mock).to receive(:versions) do |name|
       result = existing_versions[name]
+      raise Gemfury::NotFound unless result.any?
       puts "For mock versions call for '#{name}', returning #{result}"
       result
     end
@@ -74,7 +75,7 @@ describe 'GEM Server' do
 
       it 'uploads to Gemfury' do
         # trigger the fetch
-        expect(response.ok?).to eq true
+        puts gem
         expect(@uploaded.length).to eq 1
         file = @uploaded[0]
         expect(file).to be_a File
@@ -93,13 +94,13 @@ describe 'GEM Server' do
       let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
 
       describe 'GEM' do
-      its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
-      its(:cert_chain) {is_expected.to_not eq []}
+        its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
+        its(:cert_chain) {is_expected.to_not eq []}
       end
 
       it 'uploads to Gemfury' do
         # trigger the fetch
-        expect(response.ok?).to eq true
+        puts gem
         expect(@uploaded.length).to eq 1
         file = @uploaded[0]
         expect(file).to be_a File
@@ -130,7 +131,7 @@ describe 'GEM Server' do
 
         it 'does NOT upload to Gemfury' do
           # trigger the fetch
-          expect(response.ok?).to eq true
+          puts gem
           expect(@uploaded).to eq []
         end
       end
@@ -140,7 +141,7 @@ describe 'GEM Server' do
 
         it 'does NOT upload to Gemfury' do
           # trigger the fetch
-          expect(response.ok?).to eq true
+          puts gem
           expect(@uploaded).to_not eq []
         end
       end

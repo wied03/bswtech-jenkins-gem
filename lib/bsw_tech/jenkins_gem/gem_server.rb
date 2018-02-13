@@ -54,7 +54,11 @@ module BswTech
           hpi_util.merge_hpi unless spec.files.any?
         end
         fury_client = Gemfury::Client.new user_api_key: @api_key
-        existing_versions = fury_client.versions(spec.name)
+        existing_versions = begin
+          fury_client.versions(spec.name)
+        rescue Gemfury::NotFound
+          []
+        end
         unless existing_versions.find {|listing| listing['version'] == spec.version.to_s}
           puts "Uploading #{path} to Gemfury..."
           fury_client.push_gem File.new(path)
