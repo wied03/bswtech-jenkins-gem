@@ -50,8 +50,11 @@ get '/gems/:gem_filename' do |gem_filename|
     # Files might already be there
     hpi_util.merge_hpi unless spec.files.any?
   end
-  puts "Uploading #{path} to Gemfury..."
-  get_fury_client(api_key).push_gem path
+  fury_client = get_fury_client(api_key)
+  if fury_client.versions(spec.name).empty?
+    puts "Uploading #{path} to Gemfury..."
+    fury_client.push_gem File.new(path)
+  end
   File.open(path, 'rb')
 end
 

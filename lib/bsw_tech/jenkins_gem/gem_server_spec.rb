@@ -12,11 +12,21 @@ describe 'GEM Server' do
   after(:context) {FileUtils.rm_rf index_directory}
   include Rack::Test::Methods
   let(:fury_mock) {instance_double(Gemfury::Client)}
+  let(:existing_versions) do
+    Hash.new do |hash, key|
+      hash[key] = []
+    end
+  end
   before do
     allow(Gemfury::Client).to receive(:new).and_return(fury_mock)
     @uploaded = []
     allow(fury_mock).to receive(:push_gem) do |gem_file|
       @uploaded << gem_file
+    end
+    allow(fury_mock).to receive(:versions) do |name|
+      result = existing_versions[name]
+      puts "For mock versions call for '#{name}', returning #{result}"
+      result
     end
   end
 
@@ -60,7 +70,10 @@ describe 'GEM Server' do
       it 'uploads to Gemfury' do
         # trigger the fetch
         expect(response.ok?).to eq true
-        expect(@uploaded).to match [/jenkins-plugin-proxy-jenkins-core-2.89.3.gem/]
+        expect(@uploaded.length).to eq 1
+        file = @uploaded[0]
+        expect(file).to be_a File
+        expect(file.path).to match /jenkins-plugin-proxy-jenkins-core-2.89.3.gem/
       end
     end
 
@@ -82,7 +95,10 @@ describe 'GEM Server' do
       it 'uploads to Gemfury' do
         # trigger the fetch
         expect(response.ok?).to eq true
-        expect(@uploaded).to match [/apache-httpcomponents-client-4-api-4.5.3.2.1.gem/]
+        expect(@uploaded.length).to eq 1
+        file = @uploaded[0]
+        expect(file).to be_a File
+        expect(file.path).to match /jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem/
       end
 
       it 'has files' do
@@ -91,8 +107,31 @@ describe 'GEM Server' do
       end
     end
 
-    context 'found, already in Gemfury' do
-      pending 'write it'
+    context 'found, name already in Gemfury' do
+      let(:existing_versions) do
+        {
+          'jenkins-plugin-proxy-apache-httpcomponents-client-4-api' => [
+            {
+              'version' => version_already_uploaded
+            }
+          ]
+        }
+      end
+
+      context 'version is already there' do
+        let(:version_already_uploaded) {'4.5.3.2.1'}
+        let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
+
+        it 'does NOT upload to Gemfury' do
+          # trigger the fetch
+          expect(response.ok?).to eq true
+          expect(@uploaded).to eq []
+        end
+      end
+
+      context 'older version is there' do
+        pending 'write this'
+      end
     end
   end
 end
