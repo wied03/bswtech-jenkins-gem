@@ -51,7 +51,8 @@ get '/gems/:gem_filename' do |gem_filename|
     hpi_util.merge_hpi unless spec.files.any?
   end
   fury_client = get_fury_client(api_key)
-  if fury_client.versions(spec.name).empty?
+  existing_versions = fury_client.versions(spec.name)
+  unless existing_versions.find {|listing| listing['version'] == spec.version.to_s}
     puts "Uploading #{path} to Gemfury..."
     fury_client.push_gem File.new(path)
   end

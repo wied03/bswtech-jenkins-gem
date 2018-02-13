@@ -118,9 +118,10 @@ describe 'GEM Server' do
         }
       end
 
+      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
+
       context 'version is already there' do
         let(:version_already_uploaded) {'4.5.3.2.1'}
-        let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
 
         it 'does NOT upload to Gemfury' do
           # trigger the fetch
@@ -130,7 +131,13 @@ describe 'GEM Server' do
       end
 
       context 'older version is there' do
-        pending 'write this'
+        let(:version_already_uploaded) {'4.5.3.2.0'}
+
+        it 'does NOT upload to Gemfury' do
+          # trigger the fetch
+          expect(response.ok?).to eq true
+          expect(@uploaded).to_not eq []
+        end
       end
     end
   end
