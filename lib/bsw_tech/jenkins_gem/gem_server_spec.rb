@@ -2,6 +2,9 @@ require 'spec_helper'
 require 'rack/test'
 index_directory = File.join(File.dirname(__FILE__), 'test_gem_index')
 ENV['INDEX_DIRECTORY'] = index_directory
+spec_dir = File.join(File.dirname(__FILE__), '..', '..', '..', 'spec')
+ENV['GEM_CERTIFICATE_PATH'] = File.join(spec_dir, 'repo_util_cert.pem')
+ENV['GEM_PRIVATE_KEY_PATH'] = File.join(spec_dir, 'repo_util_key.pem')
 require 'bsw_tech/jenkins_gem/gem_server'
 
 describe 'GEM Server' do
@@ -58,7 +61,8 @@ describe 'GEM Server' do
     context 'found, not in Gemfury yet' do
       let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
       its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
-
+      its(:cert_chain) {is_expected.to_not eq []}
+      # TODO: Uploaded
       it 'has files' do
         expect(gem.files.length).to eq 10
         expect(gem.files[0]).to eq 'META-INF/MANIFEST.MF'

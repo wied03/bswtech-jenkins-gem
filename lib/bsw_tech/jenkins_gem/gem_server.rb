@@ -6,16 +6,26 @@ require 'fileutils'
 require 'bsw_tech/jenkins_gem/update_json_parser'
 require 'bsw_tech/jenkins_gem/gem_util'
 require 'bsw_tech/jenkins_gem/jenkins_list_fetcher'
+require 'bsw_tech/jenkins_gem/gem_hpi'
 require 'zip'
 require 'tmpdir'
 require 'digest'
 require 'tempfile'
+require 'gemfury'
+
 include BswTech::JenkinsGem::GemUtil
 
 index_dir = ENV['INDEX_DIRECTORY']
-raise 'Set the INDEX_DIRECTORY variable' unless index_dir
+raise 'Set the INDEX_DIRECTORY ENV variable' unless index_dir
 # Indexer looks here
 gems_dir = File.join(index_dir, 'gems')
+api_key = ENV['GEMFURY_API_KEY']
+raise 'Set the GEMFURY_API_KEY ENV variable' unless api_key
+fury_client = Gemfury::Client.new user_api_key: api_key
+cert_path = ENV['GEM_CERTIFICATE_PATH']
+fail 'Set the GEM_CERTIFICATE_PATH ENV variable' unless cert_path && File.exists?(cert_path)
+private_key_path = ENV['GEM_PRIVATE_KEY_PATH']
+fail 'Set the GEM_PRIVATE_KEY_PATH ENV variable' unless private_key_path && File.exists?(private_key_path)
 
 get '/quick/Marshal.4.8/:rz_file' do |rz_file|
   File.open(File.join(index_dir, 'quick', 'Marshal.4.8', rz_file), 'rb')
@@ -31,10 +41,11 @@ get '/gems/:gem_filename' do |gem_filename|
   next [404, "Unable to find gem #{gem_filename}"] unless File.exists? path
   gem = ::Gem::Package.new path
   spec = gem.spec
-  # TODO: Sign Jenkins GEM as well and upload it
+  hpi_util = BswTech::JenkinsGem::GemHpi.new(path, cert_path, private_key_path)
+  hpi_util.sign_gem unless spec.cert_chain.any?
   unless spec.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
     # Files might already be there
-    add_hpi_to_gem gem, path unless spec.files.any?
+    hpi_util.merge_hpi unless spec.files.any?
   end
   File.open(path, 'rb')
 end
