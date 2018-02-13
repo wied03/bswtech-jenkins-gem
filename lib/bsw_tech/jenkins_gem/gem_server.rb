@@ -21,11 +21,14 @@ raise 'Set the INDEX_DIRECTORY ENV variable' unless index_dir
 gems_dir = File.join(index_dir, 'gems')
 api_key = ENV['GEMFURY_API_KEY']
 raise 'Set the GEMFURY_API_KEY ENV variable' unless api_key
-fury_client = Gemfury::Client.new user_api_key: api_key
 cert_path = ENV['GEM_CERTIFICATE_PATH']
 fail 'Set the GEM_CERTIFICATE_PATH ENV variable' unless cert_path && File.exists?(cert_path)
 private_key_path = ENV['GEM_PRIVATE_KEY_PATH']
 fail 'Set the GEM_PRIVATE_KEY_PATH ENV variable' unless private_key_path && File.exists?(private_key_path)
+
+def get_fury_client(api_key)
+  Gemfury::Client.new user_api_key: api_key
+end
 
 get '/quick/Marshal.4.8/:rz_file' do |rz_file|
   File.open(File.join(index_dir, 'quick', 'Marshal.4.8', rz_file), 'rb')
@@ -47,6 +50,8 @@ get '/gems/:gem_filename' do |gem_filename|
     # Files might already be there
     hpi_util.merge_hpi unless spec.files.any?
   end
+  puts "Uploading #{path} to Gemfury..."
+  get_fury_client(api_key).push_gem path
   File.open(path, 'rb')
 end
 

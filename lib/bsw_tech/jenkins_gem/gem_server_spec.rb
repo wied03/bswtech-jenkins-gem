@@ -11,6 +11,14 @@ describe 'GEM Server' do
   before(:context) {FileUtils.rm_rf index_directory}
   after(:context) {FileUtils.rm_rf index_directory}
   include Rack::Test::Methods
+  let(:fury_mock) {instance_double(Gemfury::Client)}
+  before do
+    allow(Gemfury::Client).to receive(:new).and_return(fury_mock)
+    @uploaded = []
+    allow(fury_mock).to receive(:push_gem) do |gem_file|
+      @uploaded << gem_file
+    end
+  end
 
   def app
     Sinatra::Application
@@ -47,7 +55,12 @@ describe 'GEM Server' do
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
         its(:files) {is_expected.to eq []}
         its(:cert_chain) {is_expected.to_not eq []}
-        # TODO: Uploaded
+      end
+
+      it 'uploads to Gemfury' do
+        # trigger the fetch
+        expect(response.ok?).to eq true
+        expect(@uploaded).to match [/jenkins-plugin-proxy-jenkins-core-2.89.3.gem/]
       end
     end
 
@@ -60,9 +73,18 @@ describe 'GEM Server' do
 
     context 'found, not in Gemfury yet' do
       let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
+
+      describe 'GEM' do
       its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
       its(:cert_chain) {is_expected.to_not eq []}
-      # TODO: Uploaded
+      end
+
+      it 'uploads to Gemfury' do
+        # trigger the fetch
+        expect(response.ok?).to eq true
+        expect(@uploaded).to match [/apache-httpcomponents-client-4-api-4.5.3.2.1.gem/]
+      end
+
       it 'has files' do
         expect(gem.files.length).to eq 10
         expect(gem.files[0]).to eq 'META-INF/MANIFEST.MF'
