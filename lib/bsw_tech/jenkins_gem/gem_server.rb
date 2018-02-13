@@ -4,11 +4,13 @@ require 'rubygems/package'
 require 'rubygems/indexer'
 require 'fileutils'
 require 'bsw_tech/jenkins_gem/update_json_parser'
+require 'bsw_tech/jenkins_gem/gem_util'
 require 'bsw_tech/jenkins_gem/jenkins_list_fetcher'
 require 'zip'
 require 'tmpdir'
 require 'digest'
 require 'tempfile'
+include BswTech::JenkinsGem::GemUtil
 
 index_dir = ENV['INDEX_DIRECTORY']
 raise 'Set the INDEX_DIRECTORY variable' unless index_dir

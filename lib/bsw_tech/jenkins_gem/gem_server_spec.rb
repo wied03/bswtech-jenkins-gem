@@ -43,7 +43,7 @@ describe 'GEM Server' do
       describe 'GEM' do
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
         its(:files) {is_expected.to eq []}
-        # TODO: Signed
+        its(:cert_chain) {is_expected.to_not eq []}
         # TODO: Uploaded
       end
     end
