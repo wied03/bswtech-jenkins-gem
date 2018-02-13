@@ -1,7 +1,7 @@
 require 'bundler'
 require 'yaml'
 require 'fileutils'
-require 'bsw_tech/jenkins_gem/update_json_parser'
+require 'bsw_tech/jenkins_gem/gem_builder'
 
 def copy_gems
   # TODO: Provide a separate one off command to download an hpi and upload a built gem for that to fury. can use previous code that interprets manifest
@@ -11,11 +11,11 @@ def copy_gems
   FileUtils.mkdir_p dir
 
   Bundler.load.specs.select do |s|
-    s.name.start_with?('jenkins') && !s.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
+    s.name.start_with?('jenkins') && !s.name.include?(BswTech::JenkinsGem::GemBuilder::JENKINS_CORE_PACKAGE)
   end.each do |s|
     # It's odd this is called to_yaml, but it does in fact load the gemspec that we can retrieve metadata from
     gem_spec = YAML.load s.to_yaml
-    jenkins_name = gem_spec.metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_NAME]
+    jenkins_name = gem_spec.metadata[BswTech::JenkinsGem::GemBuilder::METADATA_JENKINS_NAME]
     source_path = s.full_gem_path
     dest_path = File.join(dir, "#{jenkins_name}.hpi")
     FileUtils.cp_r(source_path, dest_path)

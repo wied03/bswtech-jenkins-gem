@@ -53,8 +53,8 @@ module BswTech
 
       def with_downloaded_hpi
         metadata = @gem.spec.metadata
-        jenkins_name = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_NAME]
-        jenkins_version = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_VERSION]
+        jenkins_name = metadata[BswTech::JenkinsGem::GemBuilder::METADATA_JENKINS_NAME]
+        jenkins_version = metadata[BswTech::JenkinsGem::GemBuilder::METADATA_JENKINS_VERSION]
         url = "https://updates.jenkins.io/download/plugins/#{jenkins_name}/#{jenkins_version}/#{jenkins_name}.hpi"
         hpi_response = begin
           fetch(url)
@@ -68,7 +68,7 @@ module BswTech
         temp_file.rewind
         signature = Digest::SHA1.file temp_file
         temp_file.rewind
-        expected_sha = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_SHA1]
+        expected_sha = metadata[BswTech::JenkinsGem::GemBuilder::METADATA_SHA1]
         actual = signature.base64digest
         fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual == expected_sha
         yield temp_file

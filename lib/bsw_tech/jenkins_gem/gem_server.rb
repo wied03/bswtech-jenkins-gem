@@ -3,7 +3,7 @@ require 'net/http'
 require 'rubygems/package'
 require 'rubygems/indexer'
 require 'fileutils'
-require 'bsw_tech/jenkins_gem/update_json_parser'
+require 'bsw_tech/jenkins_gem/gem_builder'
 require 'bsw_tech/jenkins_gem/gem_util'
 require 'bsw_tech/jenkins_gem/jenkins_list_fetcher'
 require 'bsw_tech/jenkins_gem/gem_hpi'
@@ -48,7 +48,7 @@ module BswTech
         gem = ::Gem::Package.new path
         spec = gem.spec
         hpi_util = BswTech::JenkinsGem::GemHpi.new(path, @cert_path, @private_key_path)
-        unless spec.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
+        unless spec.name.include?(BswTech::JenkinsGem::GemBuilder::JENKINS_CORE_PACKAGE)
           # Files might already be there
           hpi_util.merge_hpi unless spec.files.any?
         end
@@ -82,7 +82,7 @@ module BswTech
 
         parser = begin
           update_response = fetch('https://updates.jenkins-ci.org/update-center.json').body
-          BswTech::JenkinsGem::UpdateJsonParser.new(update_response, jenkins_versions)
+          BswTech::JenkinsGem::GemBuilder.new(update_response, jenkins_versions)
         rescue StandardError => e
           puts "Problem fetching Jenkins info #{e}"
           raise e

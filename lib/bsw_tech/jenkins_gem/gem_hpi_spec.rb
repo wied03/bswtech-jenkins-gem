@@ -20,9 +20,9 @@ describe BswTech::JenkinsGem::GemHpi do
       s.summary = 'the details'
       s.version = '1.2.3'
       s.metadata = {
-        BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_VERSION => '4.5.3-2.1',
-        BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_NAME => 'apache-httpcomponents-client-4-api',
-        BswTech::JenkinsGem::UpdateJsonParser::METADATA_SHA1 => actual_sha
+        BswTech::JenkinsGem::GemBuilder::METADATA_JENKINS_VERSION => '4.5.3-2.1',
+        BswTech::JenkinsGem::GemBuilder::METADATA_JENKINS_NAME => 'apache-httpcomponents-client-4-api',
+        BswTech::JenkinsGem::GemBuilder::METADATA_SHA1 => actual_sha
       }
       s.homepage = 'http://homepage'
       s.authors = ['unknown']

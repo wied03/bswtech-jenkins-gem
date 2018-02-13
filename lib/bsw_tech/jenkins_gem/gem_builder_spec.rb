@@ -1,10 +1,10 @@
 require 'spec_helper'
-require 'bsw_tech/jenkins_gem/update_json_parser'
+require 'bsw_tech/jenkins_gem/gem_builder'
 
-describe BswTech::JenkinsGem::UpdateJsonParser do
+describe BswTech::JenkinsGem::GemBuilder do
   let(:jenkins_versions) {['1.23']}
 
-  subject(:parser) {BswTech::JenkinsGem::UpdateJsonParser.new(update_json_blob, jenkins_versions)}
+  subject(:parser) {BswTech::JenkinsGem::GemBuilder.new(update_json_blob, jenkins_versions)}
 
   describe '#gem_listing' do
     subject(:gem_spec) {parser.gem_listing[0]}
@@ -32,7 +32,7 @@ updateCenter.post(
 
     describe 'core Jenkins GEM' do
       subject(:gem_spec) do
-        parser.gem_listing.find {|gem| gem.name.include? BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE}
+        parser.gem_listing.find {|gem| gem.name.include? BswTech::JenkinsGem::GemBuilder::JENKINS_CORE_PACKAGE}
       end
 
       its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
@@ -179,7 +179,7 @@ updateCenter.post(
       context 'dependency problems' do
         subject {deps[0].requirement.requirements[0]}
 
-        BswTech::JenkinsGem::UpdateJsonParser::DEPENDENCY_REMAPS.each do |remap_plugin, versions|
+        BswTech::JenkinsGem::GemBuilder::DEPENDENCY_REMAPS.each do |remap_plugin, versions|
           versions.each do |old_version, new_version|
             context "#{remap_plugin}" do
               let(:update_json_blob) {
