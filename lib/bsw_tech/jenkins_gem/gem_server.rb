@@ -16,6 +16,7 @@ require 'gemfury'
 module BswTech
   module JenkinsGem
     class GemServer < Sinatra::Application
+      set :port, 9292
       include BswTech::JenkinsGem::GemUtil
 
       def initialize

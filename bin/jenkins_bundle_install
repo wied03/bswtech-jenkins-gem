@@ -1,1 +1,17 @@
 #!/usr/bin/env ruby
+
+ENV['INDEX_DIRECTORY'] = 'gem_index'
+ENV['GEM_CERTIFICATE_PATH'] = File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
+ENV['GEM_PRIVATE_KEY_PATH'] = File.join(ENV['ENCRYPTED_DIR'], 'gem-private_key.pem')
+require 'bsw_tech/jenkins_gem/gem_server'
+
+puts 'Starting Rack...'
+server_process = fork do
+  BswTech::JenkinsGem::GemServer.run!
+end
+
+sleep 5
+
+puts 'Shutting down Rack server'
+Process.kill 'TERM',
+              server_process
