@@ -330,6 +330,39 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
           # Current Jenkins script ignores optional dependencies, so will we
           its(:length) {is_expected.to eq 4}
         end
+
+        context 'no dependencies' do
+          let(:manifest_contents) do
+            <<-CODE
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: stephenc
+Build-Jdk: 1.8.0_92
+Extension-Name: node-iterator-api
+Specification-Title: This plugin provides support for iterating throug
+ h all the Node instances that are in use by Jenkins,
+     even those Node instances that are not traditionally attached to 
+ Jenkins. The API exposed by this
+     plugin can be used by cloud provider plugins to identify unused p
+ rovisioned resource.
+Implementation-Title: node-iterator-api
+Implementation-Version: 1.5.0
+Group-Id: org.jenkins-ci.plugins
+Short-Name: node-iterator-api
+Long-Name: Node Iterator API Plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/Node+Iterator+API+Plugin
+Plugin-Version: 1.5.0
+Hudson-Version: 1.625.3
+Jenkins-Version: 1.625.3
+Plugin-Developers: Stephen Connolly:stephenconnolly:
+Support-Dynamic-Loading: true
+
+            CODE
+          end
+
+          its(:length) {is_expected.to eq 1}
+        end
       end
     end
   end

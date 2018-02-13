@@ -74,7 +74,9 @@ module BswTech
           }
           s.homepage = properties['Url']
           s.authors = properties['Plugin-Developers'].split(',')
-          properties['Plugin-Dependencies'].split(',').each do |dependency_string|
+          # Handle no dependency cases
+          dependencies = properties['Plugin-Dependencies'] || ''
+          dependencies.split(',').each do |dependency_string|
             name_version, props = dependency_string.split ';'
             props = props ? Hash[props.split(',').map {|kv| kv.split(':=')}] : {}
             name, version = name_version.split(':')
