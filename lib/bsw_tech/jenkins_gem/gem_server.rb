@@ -20,7 +20,7 @@ module BswTech
       include BswTech::JenkinsGem::GemUtil
 
       def initialize
-        super()
+        super
         @index_dir = ENV['INDEX_DIRECTORY']
         raise 'Set the INDEX_DIRECTORY ENV variable' unless @index_dir
         # Indexer looks here
@@ -82,7 +82,7 @@ module BswTech
 
         parser = begin
           update_response = fetch('https://updates.jenkins-ci.org/update-center.json').body
-          BswTech::JenkinsGem::GemBuilder.new(update_response, jenkins_versions)
+          BswTech::JenkinsGem::GemBuilder.from_update_json(update_response, jenkins_versions)
         rescue StandardError => e
           puts "Problem fetching Jenkins info #{e}"
           raise e

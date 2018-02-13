@@ -15,10 +15,10 @@ module BswTech
 
       attr_reader :gem_listing
 
-      def initialize(file_blob, jenkins_versions)
+      def self.from_update_json(file_blob, jenkins_versions)
         fail 'File blob contents is required' unless file_blob && !file_blob.empty?
         metadata = get_hash file_blob
-        @gem_listing = metadata['plugins'].map do |plugin_name, info|
+        gem_listing = metadata['plugins'].map do |plugin_name, info|
           begin
             Gem::Specification.new do |s|
               s.name = get_name(plugin_name)
@@ -47,7 +47,7 @@ module BswTech
           end
         end
         jenkins_versions.each do |jenkins_version|
-          @gem_listing << Gem::Specification.new do |s|
+          gem_listing << Gem::Specification.new do |s|
             s.name = get_name(JENKINS_CORE_PACKAGE)
             s.summary = 'Jenkins stub'
             s.version = format_version(jenkins_version)
@@ -55,48 +55,57 @@ module BswTech
             s.authors = ['alotofpeople']
           end
         end
+        new(gem_listing)
       end
+
+      def initialize(gem_listing)
+        @gem_listing = gem_listing
+      end
+
+      private_class_method :new
 
       private
 
-      def add_core_jenkins(version,
-                           gem_spec)
-        gem_spec.add_runtime_dependency get_name(JENKINS_CORE_PACKAGE),
-                                        get_dependency_version(version)
-      end
-
-      def get_dependency_version(version)
-        ">= #{version}"
-      end
-
-      def get_name(package)
-        "#{PREFIX}-#{package}"
-      end
-
-      def add_dependency(dependency, gem_spec)
-        return if dependency['optional']
-        candidate_version = dependency['version']
-        dependency_name = dependency['name']
-        remap = DEPENDENCY_REMAPS[dependency_name]
-        if remap
-          new_version = remap[candidate_version]
-          candidate_version = new_version if new_version
+      class << self
+        def add_core_jenkins(version,
+                             gem_spec)
+          gem_spec.add_runtime_dependency get_name(JENKINS_CORE_PACKAGE),
+                                          get_dependency_version(version)
         end
-        candidate_version = format_version candidate_version
-        gem_spec.add_runtime_dependency get_name(dependency_name),
-                                        get_dependency_version(candidate_version)
-      end
 
-      def format_version(jenkins_number)
-        # + is not a legal character in GEM versions but we can change it back later
-        jenkins_number.gsub('+', '.')
-          .gsub('-', '.') # Rubygems treats dash as a pre-release version
-      end
+        def get_dependency_version(version)
+          ">= #{version}"
+        end
 
-      def get_hash(file_blob)
-        trailing_end_index = file_blob.rindex(');')
-        only_json = file_blob[0..trailing_end_index - 1].gsub('updateCenter.post(', '')
-        JSON.parse only_json
+        def get_name(package)
+          "#{PREFIX}-#{package}"
+        end
+
+        def add_dependency(dependency, gem_spec)
+          return if dependency['optional']
+          candidate_version = dependency['version']
+          dependency_name = dependency['name']
+          remap = DEPENDENCY_REMAPS[dependency_name]
+          if remap
+            new_version = remap[candidate_version]
+            candidate_version = new_version if new_version
+          end
+          candidate_version = format_version candidate_version
+          gem_spec.add_runtime_dependency get_name(dependency_name),
+                                          get_dependency_version(candidate_version)
+        end
+
+        def format_version(jenkins_number)
+          # + is not a legal character in GEM versions but we can change it back later
+          jenkins_number.gsub('+', '.')
+            .gsub('-', '.') # Rubygems treats dash as a pre-release version
+        end
+
+        def get_hash(file_blob)
+          trailing_end_index = file_blob.rindex(');')
+          only_json = file_blob[0..trailing_end_index - 1].gsub('updateCenter.post(', '')
+          JSON.parse only_json
+        end
       end
     end
   end

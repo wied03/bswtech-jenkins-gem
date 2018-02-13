@@ -4,7 +4,7 @@ require 'bsw_tech/jenkins_gem/gem_builder'
 describe BswTech::JenkinsGem::GemBuilder do
   let(:jenkins_versions) {['1.23']}
 
-  subject(:parser) {BswTech::JenkinsGem::GemBuilder.new(update_json_blob, jenkins_versions)}
+  subject(:parser) {BswTech::JenkinsGem::GemBuilder.from_update_json(update_json_blob, jenkins_versions)}
 
   describe '#gem_listing' do
     subject(:gem_spec) {parser.gem_listing[0]}
