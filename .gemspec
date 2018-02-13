@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.files = FileList["#{src}/**/*.rb",
                      "#{src}/**/*.rake"].exclude('**/*_spec.rb')
   # Work around prerelease nil question
-  s.version = String.new(ENV['version_number'] || '1.0.0')
+  s.version = String.new(ENV['version_number'] || '1.0.1')
   s.summary = 'Jenkins GEM utility'
   s.description = s.summary
   s.rdoc_options << '--inline-source' << '--line-numbers'

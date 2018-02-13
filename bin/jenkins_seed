@@ -25,5 +25,6 @@ ensure
   Process.kill 'TERM',
                 server_process
 end
-
+puts 'Running one more time to ensure localhost source is not in Gemfile.lock'
+sh 'bundle install --trust-policy HighSecurity'
 copy_gems
