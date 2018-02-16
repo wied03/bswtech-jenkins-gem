@@ -3,6 +3,11 @@ require 'rake'
 
 src='lib'
 
+PUBLIC_KEY = File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
+fail 'no GEM public key' unless File.exist? PUBLIC_KEY
+PRIVATE_KEY = File.join(ENV['ENCRYPTED_DIR'], 'gem-private_key.pem')
+fail 'no GEM private key' unless File.exist? PRIVATE_KEY
+
 Gem::Specification.new do |s|
   s.name = 'bswtech-jenkins-gem'
   s.files = FileList["#{src}/**/*.rb",
@@ -21,4 +26,6 @@ Gem::Specification.new do |s|
   s.executables << 'jenkins_seed'
   s.executables << 'jenkins_manual_fetch'
   s.executables << 'jenkins_bundle_update'
+  s.cert_chain = [PUBLIC_KEY]
+  s.signing_key = PRIVATE_KEY
 end
