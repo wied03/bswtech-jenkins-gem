@@ -70,9 +70,9 @@ module BswTech
 
       # TODO: Somewhere, use the Jenkins metadata JSON to verify if any security problems exist
 
-      # TODO: ETag based index expire?
       def build_index
         if File.exist?(@index_dir)
+          puts 'Index already exists, returning existing index'
           return
         end
         puts "Fetching Jenkins plugin list..."

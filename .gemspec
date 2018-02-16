@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.files = FileList["#{src}/**/*.rb",
                      "#{src}/**/*.rake"].exclude('**/*_spec.rb')
   # Work around prerelease nil question
-  s.version = String.new(ENV['version_number'] || '1.0.1')
+  s.version = String.new(ENV['version_number'] || '1.0.2')
   s.summary = 'Jenkins GEM utility'
   s.description = s.summary
   s.rdoc_options << '--inline-source' << '--line-numbers'
@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.executables << 'jenkins_bundle_install'
   s.executables << 'jenkins_seed'
   s.executables << 'jenkins_manual_fetch'
+  s.executables << 'jenkins_bundle_update'
 end
