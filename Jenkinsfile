@@ -58,8 +58,6 @@ node('docker.build') {
           sh "gem cert --add ${env.PUBLIC_KEY_PATH}"
           ruby.rake 'verify_sign'
         }
-        archiveArtifacts artifacts: 'pkg/*.gem',
-                         excludes: null
       }
 
       if (env.BRANCH_NAME == 'master') {
