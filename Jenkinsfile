@@ -49,6 +49,7 @@ node('docker.build') {
       }
 
       stage('Build GEM') {
+        milestone()
         withCredentials([
                           file(credentialsId: 'gem_public_key', variable: 'PUBLIC_KEY_FILE'),
                           file(credentialsId: 'gem_private_key', variable: 'PRIVATE_KEY_FILE')
