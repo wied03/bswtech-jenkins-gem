@@ -64,11 +64,9 @@ node('docker.build') {
         stage('Publish GEM') {
           milestone()
 
-          node('docker.build') {
-            withCredentials([string(credentialsId: 'gemfury_key',
-                                    variable: 'gemKey')]) {
-              sh "fury push --api-token=${env.gemKey} pkg/*.gem"
-            }
+          withCredentials([string(credentialsId: 'gemfury_key',
+                                  variable: 'gemKey')]) {
+            sh "fury push --api-token=${env.gemKey} pkg/*.gem"
           }
         }
       }
