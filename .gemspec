@@ -1,7 +1,12 @@
-PUBLIC_KEY = File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
-fail 'no GEM public key' unless File.exist? PUBLIC_KEY
-PRIVATE_KEY = File.join(ENV['ENCRYPTED_DIR'], 'gem-private_key.pem')
-fail 'no GEM private key' unless File.exist? PRIVATE_KEY
+PUBLIC_KEY = ENV['PUBLIC_KEY_PATH'] || File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
+PRIVATE_KEY = ENV['PRIVATE_KEY_PATH'] || File.join(ENV['ENCRYPTED_DIR'], 'gem-private_key.pem')
+
+if File.exist?(PUBLIC_KEY) ^ File.exist?(PRIVATE_KEY)
+  fail 'Need to supply both public and private key to sign GEMs!'
+end
+
+sign_gems = File.exist?(PUBLIC_KEY) && File.exist?(PRIVATE_KEY)
+puts 'Enabling GEM signing' if sign_gems
 
 MAJOR_VERSION = '1.0'
 MINOR_VERSION = ENV['BUILD_NUMBER'] || '2'
@@ -23,6 +28,6 @@ Gem::Specification.new do |s|
   s.executables << 'jenkins_seed'
   s.executables << 'jenkins_manual_fetch'
   s.executables << 'jenkins_bundle_update'
-  s.cert_chain = [PUBLIC_KEY]
-  s.signing_key = PRIVATE_KEY
+  s.cert_chain = [PUBLIC_KEY] if sign_gems
+  s.signing_key = PRIVATE_KEY if sign_gems
 end
