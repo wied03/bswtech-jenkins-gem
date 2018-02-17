@@ -44,7 +44,7 @@ describe 'GEM Server' do
       Marshal.load(Gem.gunzip(response.body))
     end
 
-    its(:length) {is_expected.to eq 1516}
+    its(:length) {is_expected.to be > 1500}
   end
 
   describe 'individual GEM metadata' do
