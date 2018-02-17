@@ -33,6 +33,8 @@ node('docker.build') {
     docker.image(dockerImage).inside {
       stage('Dependencies') {
         sh 'bundle install'
+        def builtVersion = ruby.rake('dump_version', true, true)
+        currentBuild.description = "${builtVersion} @ <a href=\"https://manage.fury.io/dashboard/wied03/package/EjN5AjN/versions\">Gemfury</a>"
       }
 
       stage('Test') {

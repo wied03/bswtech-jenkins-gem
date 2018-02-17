@@ -17,9 +17,17 @@ task :clean do
   rm_rf 'pkg'
 end
 
+def gem_spec
+  Bundler.definition.specs['bswtech-jenkins-gem'][0]
+end
+
+task :dump_version do
+  puts gem_spec.version
+end
+
 desc 'Installs and verifies that GEM is signed'
 task :verify_sign => :build do
-  our_gem_spec =  Bundler.definition.specs['bswtech-jenkins-gem'][0]
+  our_gem_spec = gem_spec
   gem_file = FileList['pkg/*.gem'][0]
   puts 'Testing out a GEM install with high security'
   sh "gem install -P HighSecurity #{gem_file}"
