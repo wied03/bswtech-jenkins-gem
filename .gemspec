@@ -6,7 +6,6 @@ if File.exist?(PUBLIC_KEY) ^ File.exist?(PRIVATE_KEY)
 end
 
 sign_gems = File.exist?(PUBLIC_KEY) && File.exist?(PRIVATE_KEY)
-puts 'Enabling GEM signing' if sign_gems
 
 MAJOR_VERSION = '1.0'
 MINOR_VERSION = ENV['BUILD_NUMBER'] || '2'
