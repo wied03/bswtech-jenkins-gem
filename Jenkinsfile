@@ -51,12 +51,9 @@ node('docker.build') {
       stage('Build GEM') {
         milestone()
         withCredentials([
-                          file(credentialsId: 'gem_public_key', variable: 'PUBLIC_KEY_FILE'),
-                          file(credentialsId: 'gem_private_key', variable: 'PRIVATE_KEY_FILE')
+                          file(credentialsId: 'gem_public_key', variable: 'PUBLIC_KEY_PATH'),
+                          file(credentialsId: 'gem_private_key', variable: 'PRIVATE_KEY_PATH')
                         ]) {
-          echo "The public key is located at ${PUBLIC_KEY_FILE}"
-          env.PUBLIC_KEY_PATH = $PUBLIC_KEY_FILE
-          env.PRIVATE_KEY_PATH = $PRIVATE_KEY_FILE
           ruby.rake 'build'
         }
         archiveArtifacts artifacts: 'pkg/*.gem',
