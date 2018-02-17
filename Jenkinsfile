@@ -54,7 +54,9 @@ node('docker.build') {
                           file(credentialsId: 'gem_public_key', variable: 'PUBLIC_KEY_PATH'),
                           file(credentialsId: 'gem_private_key', variable: 'PRIVATE_KEY_PATH')
                         ]) {
-          ruby.rake 'build'
+          // Need this to verify our signature
+          sh "gem cert --add ${env.PUBLIC_KEY_PATH}"
+          ruby.rake 'verify_sign'
         }
         archiveArtifacts artifacts: 'pkg/*.gem',
                          excludes: null
