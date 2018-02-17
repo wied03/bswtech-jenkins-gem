@@ -32,8 +32,6 @@ node('docker.build') {
 
     docker.image(dockerImage).inside {
       stage('Dependencies') {
-        // Ruby docker image doesn't have Rake
-        sh 'gem contents rake > /dev/null || gem install rake'
         sh 'bundle install'
       }
 

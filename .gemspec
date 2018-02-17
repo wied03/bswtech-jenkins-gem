@@ -1,19 +1,16 @@
-$LOAD_PATH << './lib'
-require 'rake'
-
-src='lib'
-
 PUBLIC_KEY = File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
 fail 'no GEM public key' unless File.exist? PUBLIC_KEY
 PRIVATE_KEY = File.join(ENV['ENCRYPTED_DIR'], 'gem-private_key.pem')
 fail 'no GEM private key' unless File.exist? PRIVATE_KEY
 
+MAJOR_VERSION = '1.0'
+MINOR_VERSION = ENV['BUILD_NUMBER'] || '2'
+VERSION = Gem::Version.new("#{MAJOR_VERSION}.#{MINOR_VERSION}")
+
 Gem::Specification.new do |s|
   s.name = 'bswtech-jenkins-gem'
-  s.files = FileList["#{src}/**/*.rb",
-                     "#{src}/**/*.rake"].exclude('**/*_spec.rb')
-  # Work around prerelease nil question
-  s.version = String.new(ENV['version_number'] || '1.0.2')
+  s.files = Dir.glob('lib/**/*.rb') - Dir.glob('**/*_spec.rb')
+  s.version = VERSION
   s.summary = 'Jenkins GEM utility'
   s.description = s.summary
   s.rdoc_options << '--inline-source' << '--line-numbers'
