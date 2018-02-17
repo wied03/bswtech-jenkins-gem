@@ -34,6 +34,7 @@ node('docker.build') {
 
     docker.image(dockerImage).inside {
       stage('Dependencies') {
+        echo 'we are fetching'
         shell('bundle install')
       }
 
