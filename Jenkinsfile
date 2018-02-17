@@ -59,41 +59,23 @@ node('docker.build') {
         archiveArtifacts artifacts: 'pkg/*.gem',
                          excludes: null
       }
+
+      if (env.BRANCH_NAME == 'master') {
+        stage('Publish GEM') {
+          milestone()
+
+          node('docker.build') {
+            withCredentials([string(credentialsId: credential_id,
+                                    variable: 'gemKey')]) {
+              sh "fury push --api-token=${env.gemKey} pkg/*.gem"
+            }
+          }
+        }
+      }
     }
   }
   catch (any) {
     bswHandleError any
     throw any
-  }
-}
-
-// TODO: Nothing below this line has ben adapted from the Docker copy
-
-// only allow pushing from master
-if (env.BRANCH_NAME == 'notyet') {
-  stage('Publish Image') {
-    milestone()
-
-    node('docker.build') {
-      try {
-        // might be on a different node (filesystem deps)
-        unstash 'complete-workspace'
-        ruby.with_gem_credentials(furyRepo, furyCredentialId) {
-          ruby.dependencies()
-        }
-
-        // 2nd arg is creds
-        docker.withRegistry('https://quay.io', 'quay_io_docker') {
-          ruby.rake 'push'
-        }
-        bswKeepBuild()
-        archiveArtifacts artifacts: 'plugins/Gemfile.lock',
-                         excludes: null
-      }
-      catch (any) {
-        bswHandleError any
-        throw any
-      }
-    }
   }
 }
