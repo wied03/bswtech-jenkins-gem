@@ -1,5 +1,5 @@
-PUBLIC_KEY = ENV['PUBLIC_KEY_PATH']
-PRIVATE_KEY = ENV['PRIVATE_KEY_PATH']
+PUBLIC_KEY = ENV['PUBLIC_KEY_PATH'] || ''
+PRIVATE_KEY = ENV['PRIVATE_KEY_PATH'] || ''
 
 if File.exist?(PUBLIC_KEY) ^ File.exist?(PRIVATE_KEY)
   fail 'Need to supply both public and private key to sign GEMs!'
