@@ -32,6 +32,8 @@ node('docker.build') {
 
     docker.image(dockerImage).inside {
       stage('Dependencies') {
+        // Ruby docker image doesn't have Rake
+        sh 'gem contents rake > /dev/null || gem install rake'
         sh 'bundle install'
       }
 
@@ -54,6 +56,8 @@ node('docker.build') {
     throw any
   }
 }
+
+// TODO: Nothing below this line has ben adapted from the Docker copy
 
 // only allow pushing from master
 if (env.BRANCH_NAME == 'notyet') {
