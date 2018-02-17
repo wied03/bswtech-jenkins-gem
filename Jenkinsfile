@@ -22,10 +22,17 @@ node('docker.build') {
         extensions: scm.extensions + [[$class: 'CleanCheckout']],
         userRemoteConfigs: scm.userRemoteConfigs
       ])
-      rubyVersion = readFile('.ruby-version').trim()
+
+      dockerImage = "ruby:${readFile('.ruby-version').trim()}"
     }
 
-    docker.image("ruby:${rubyVersion}").inside {
+    stage('Docker Pull') {
+      docker.image(dockerImage).inside {
+        shell("echo ok")
+      }
+    }
+
+    docker.image(dockerImage).inside {
       stage('Dependencies') {
         shell('bundle install')
       }
