@@ -27,15 +27,12 @@ node('docker.build') {
     }
 
     stage('Docker Pull') {
-      docker.image(dockerImage).inside {
-        shell("echo ok")
-      }
+      docker.image(dockerImage)
     }
 
     docker.image(dockerImage).inside {
       stage('Dependencies') {
-        echo 'we are fetching'
-        shell('bundle install')
+        sh 'bundle install'
       }
 
       stage('Test') {
