@@ -21,6 +21,8 @@ describe 'GEM Server' do
   end
 
   before do
+    # Just need this to be set, don't need an actual value
+    ENV['GEMFURY_API_KEY'] = 'foobar'
     allow(Gemfury::Client).to receive(:new).and_return(fury_mock)
     @uploaded = []
     allow(fury_mock).to receive(:push_gem) do |gem_file|
