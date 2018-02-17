@@ -68,6 +68,7 @@ node('docker.build') {
                                   variable: 'gemKey')]) {
             sh "fury push --api-token=${env.gemKey} pkg/*.gem"
           }
+          bswKeepBuild()
         }
       }
     }
