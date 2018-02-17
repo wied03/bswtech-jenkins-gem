@@ -40,7 +40,7 @@ node('docker.build') {
         // RSpec CI reporter
         env.GENERATE_REPORTS = 'true'
         try {
-          ruby.rake 'spec'
+          ruby.rake 'clean spec'
         }
         finally {
           junit keepLongStdio: true,
@@ -56,7 +56,7 @@ node('docker.build') {
                         ]) {
           // Need this to verify our signature
           sh "gem cert --add ${env.PUBLIC_KEY_PATH}"
-          ruby.rake 'verify_sign'
+          ruby.rake 'clean build verify_sign'
         }
       }
 
