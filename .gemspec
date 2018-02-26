@@ -8,7 +8,7 @@ end
 sign_gems = File.exist?(PUBLIC_KEY) && File.exist?(PRIVATE_KEY)
 
 MAJOR_VERSION = '1.0'
-MINOR_VERSION = ENV['BUILD_NUMBER'] || '2'
+MINOR_VERSION = ENV['BUILD_NUMBER'] || '25'
 VERSION = Gem::Version.new("#{MAJOR_VERSION}.#{MINOR_VERSION}")
 
 Gem::Specification.new do |s|

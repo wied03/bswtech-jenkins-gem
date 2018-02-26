@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bswtech-jenkins-gem (1.0.2)
+    bswtech-jenkins-gem (1.0.25)
       gemfury (~> 0.7)
       rubyzip (~> 1.2)
       sinatra (~> 2.0)
@@ -27,10 +27,10 @@ GEM
     highline (1.7.10)
     multi_json (1.13.1)
     multipart-post (2.0.0)
-    mustermann (1.0.1)
+    mustermann (1.0.2)
     netrc (0.11.0)
     rack (2.0.4)
-    rack-protection (2.0.0)
+    rack-protection (2.0.1)
       rack
     rack-test (0.8.2)
       rack (>= 1.0, < 3)
@@ -52,10 +52,10 @@ GEM
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
     rubyzip (1.2.1)
-    sinatra (2.0.0)
+    sinatra (2.0.1)
       mustermann (~> 1.0)
       rack (~> 2.0)
-      rack-protection (= 2.0.0)
+      rack-protection (= 2.0.1)
       tilt (~> 2.0)
     thor (0.20.0)
     tilt (2.0.8)

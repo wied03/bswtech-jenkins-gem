@@ -26,7 +26,7 @@ begin
       sh "bundle config trust-policy HighSecurity"
     end
     begin
-      sh "GEM_SEED_ENABLED=1 bundle update #{ARGV.join(' ')}"
+      sh "GEM_SEED_ENABLED=1 bundle update --conservative #{ARGV.join(' ')}"
     ensure
       sh "bundle config --delete trust-policy" if policy_not_set
     end
