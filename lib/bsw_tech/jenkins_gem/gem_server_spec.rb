@@ -93,7 +93,7 @@ describe 'GEM Server' do
     end
 
     context 'found, not in Gemfury yet' do
-      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
+      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.5.3.0.gem'}
 
       describe 'GEM' do
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
@@ -106,11 +106,11 @@ describe 'GEM Server' do
         expect(@uploaded.length).to eq 1
         file = @uploaded[0]
         expect(file).to be_a File
-        expect(file.path).to match /jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem/
+        expect(file.path).to match /jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.5.3.0.gem/
       end
 
       it 'has files' do
-        expect(gem.files.length).to eq 10
+        expect(gem.files.length).to eq 13
         expect(gem.files[0]).to eq 'META-INF/MANIFEST.MF'
       end
     end
@@ -126,10 +126,10 @@ describe 'GEM Server' do
         }
       end
 
-      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
+      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.5.3.0.gem'}
 
       context 'version is already there' do
-        let(:version_already_uploaded) {'4.5.3.2.1'}
+        let(:version_already_uploaded) {'4.5.5.3.0'}
 
         it 'does NOT upload to Gemfury' do
           # trigger the fetch
@@ -141,7 +141,7 @@ describe 'GEM Server' do
       context 'older version is there' do
         let(:version_already_uploaded) {'4.5.3.2.0'}
 
-        it 'does NOT upload to Gemfury' do
+        it 'does upload to Gemfury' do
           # trigger the fetch
           puts gem
           expect(@uploaded).to_not eq []
