@@ -156,6 +156,7 @@ module BswTech
           # + is not a legal character in GEM versions but we can change it back later
           jenkins_number.gsub('+', '.')
             .gsub('-', '.') # Rubygems treats dash as a pre-release version
+            .gsub(/\.$/, '.0') # sometimes versions are just 2+, which would leave us with 2. without this line, which is not valid
         end
 
         def get_hash(file_blob)
