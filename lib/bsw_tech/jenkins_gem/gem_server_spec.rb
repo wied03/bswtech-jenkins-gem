@@ -67,7 +67,7 @@ describe 'GEM Server' do
     end
 
     describe 'Jenkins core' do
-      let(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.89.3.gem'}
+      let(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.164.1.gem'}
 
       describe 'GEM' do
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
