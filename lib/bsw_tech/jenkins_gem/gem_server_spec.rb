@@ -81,7 +81,7 @@ describe 'GEM Server' do
         expect(@uploaded.length).to eq 1
         file = @uploaded[0]
         expect(file).to be_a File
-        expect(file.path).to match /jenkins-plugin-proxy-jenkins-core-2.89.3.gem/
+        expect(file.path).to match /jenkins-plugin-proxy-jenkins-core-2.164.1.gem/
       end
     end
 
