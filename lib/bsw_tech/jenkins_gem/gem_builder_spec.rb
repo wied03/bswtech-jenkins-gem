@@ -176,6 +176,19 @@ updateCenter.post(
           it {is_expected.to eq ['>=', Gem::Version.new('2.9.2')]}
         end
 
+        context 'plus-version' do
+          subject {deps[0].requirement.requirements[0]}
+
+          let(:update_json_blob) {
+            <<-CODE
+        updateCenter.post(
+        {"connectionCheckUrl":"http://www.google.com/","core":{"buildDate":"Feb 04, 2018","name":"core","sha1":"D8lrLmW+uYqWiSkGFhEXHhQ6I4w=","url":"http://updates.jenkins-ci.org/download/war/2.105/jenkins.war","version":"2.105"},"id":"default","plugins":{"AnchorChain":{"buildDate":"Mar 11, 2012","dependencies":[{"name":"maven-plugin","optional":false,"version":"2+"}],"developers":[{"developerId":"direvius","email":"direvius@gmail.com","name":"Alexey Lavrenuke"}],"excerpt":"Adds links from a text file to sidebar on each build","gav":"org.jenkins-ci.plugins:AnchorChain:1.0","labels":["report"],"name":"AnchorChain","releaseTimestamp":"2012-03-11T14:59:14.00Z","requiredCore":"1.398","scm":"https://github.com/jenkinsci/anchor-chain-plugin","sha1":"rY1W96ad9TJI1F3phFG8X4LE26Q=","title":"AnchorChain","url":"http://updates.jenkins-ci.org/download/plugins/AnchorChain/1.0/AnchorChain.hpi","version":"1.0","wiki":"https://plugins.jenkins.io/AnchorChain"}},"signature":{}, "updateCenterVersion": "1", "warnings": []});
+            CODE
+          }
+
+          it {is_expected.to eq ['>=', Gem::Version.new('2.0')]}
+        end
+
         context 'dependency problems' do
           subject {deps[0].requirement.requirements[0]}
 

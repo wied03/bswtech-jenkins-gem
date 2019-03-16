@@ -1,3 +1,5 @@
+require 'json'
+
 module BswTech
   module JenkinsGem
     class GemBuilder
