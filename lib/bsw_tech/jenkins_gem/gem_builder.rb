@@ -26,6 +26,8 @@ module BswTech
             Gem::Specification.new do |s|
               s.name = get_name(plugin_name)
               excerpt = info['excerpt'].gsub('TODO:', '')
+              # Rubygems does not like TODO
+              excerpt = 'No description provided' if excerpt == 'TODO'
               s.summary = excerpt
               jenkins_version = info['version']
               s.version = format_version(jenkins_version)
