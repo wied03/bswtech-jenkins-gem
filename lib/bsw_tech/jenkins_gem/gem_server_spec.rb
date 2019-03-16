@@ -20,22 +20,6 @@ describe 'GEM Server' do
     end
   end
 
-  before do
-    # Just need this to be set, don't need an actual value
-    ENV['GEMFURY_API_KEY'] = 'foobar'
-    allow(Gemfury::Client).to receive(:new).and_return(fury_mock)
-    @uploaded = []
-    allow(fury_mock).to receive(:push_gem) do |gem_file|
-      @uploaded << gem_file
-    end
-    allow(fury_mock).to receive(:versions) do |name|
-      result = existing_versions[name]
-      raise Gemfury::NotFound unless result.any?
-      puts "For mock versions call for '#{name}', returning #{result}"
-      result
-    end
-  end
-
   def app
     BswTech::JenkinsGem::GemServer
   end
@@ -66,7 +50,10 @@ describe 'GEM Server' do
       package.spec
     end
 
-    describe 'Jenkins core' do
+    describe 'Jenkins core and Git' do
+      before {
+        get '/gems/jenkins-plugin-proxy-git-3.9.3.gem'
+      }
       let(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.164.1.gem'}
 
       describe 'GEM' do
@@ -78,10 +65,10 @@ describe 'GEM Server' do
       it 'uploads to Gemfury' do
         # trigger the fetch
         puts gem
-        expect(@uploaded.length).to eq 1
-        file = @uploaded[0]
-        expect(file).to be_a File
-        expect(file.path).to match /jenkins-plugin-proxy-jenkins-core-2.164.1.gem/
+        lines = File.readlines File.join(index_directory, 'fury_files.txt')
+        expect(lines.length).to eq 2
+        expect(lines[0].strip).to end_with 'jenkins-plugin-proxy-git-3.9.3.gem'
+        expect(lines[1].strip).to end_with 'jenkins-plugin-proxy-jenkins-core-2.164.1.gem'
       end
     end
 
@@ -90,63 +77,6 @@ describe 'GEM Server' do
 
       its(:ok?) {is_expected.to eq false}
       its(:status) {is_expected.to eq 404}
-    end
-
-    context 'found, not in Gemfury yet' do
-      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.5.3.0.gem'}
-
-      describe 'GEM' do
-        its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
-        its(:cert_chain) {is_expected.to_not eq []}
-      end
-
-      it 'uploads to Gemfury' do
-        # trigger the fetch
-        puts gem
-        expect(@uploaded.length).to eq 1
-        file = @uploaded[0]
-        expect(file).to be_a File
-        expect(file.path).to match /jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.5.3.0.gem/
-      end
-
-      it 'has files' do
-        expect(gem.files.length).to eq 13
-        expect(gem.files[0]).to eq 'META-INF/MANIFEST.MF'
-      end
-    end
-
-    context 'found, name already in Gemfury' do
-      let(:existing_versions) do
-        {
-          'jenkins-plugin-proxy-apache-httpcomponents-client-4-api' => [
-            {
-              'version' => version_already_uploaded
-            }
-          ]
-        }
-      end
-
-      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.5.3.0.gem'}
-
-      context 'version is already there' do
-        let(:version_already_uploaded) {'4.5.5.3.0'}
-
-        it 'does NOT upload to Gemfury' do
-          # trigger the fetch
-          puts gem
-          expect(@uploaded).to eq []
-        end
-      end
-
-      context 'older version is there' do
-        let(:version_already_uploaded) {'4.5.3.2.0'}
-
-        it 'does upload to Gemfury' do
-          # trigger the fetch
-          puts gem
-          expect(@uploaded).to_not eq []
-        end
-      end
     end
   end
 end

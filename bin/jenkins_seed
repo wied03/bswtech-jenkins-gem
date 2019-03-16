@@ -4,6 +4,7 @@ require 'bsw_tech/jenkins_gem/gem_server'
 require 'bsw_tech/jenkins_gem/bundler_copy'
 require 'bundler'
 require 'rake'
+require 'gemfury'
 
 ENV['INDEX_DIRECTORY'] = 'gem_index'
 ENV['GEM_CERTIFICATE_PATH'] = File.join(ENV['ENCRYPTED_DIR'], 'gem-public_cert.pem')
@@ -25,6 +26,13 @@ ensure
   Process.kill 'TERM',
                 server_process
 end
+fury_client = Gemfury::Client.new user_api_key: ENV['GEMFURY_API_KEY']
+fury_queue = File.new(File.join(ENV['INDEX_DIRECTORY'], 'fury_files.txt'))
+fury_queue.each_line do |line|
+  puts "Uploading #{line} to Gemfury..."
+  fury_client.push_gem File.new(line)
+end
+
 puts 'Running one more time to ensure localhost source is not in Gemfile.lock'
 sh 'bundle install --trust-policy HighSecurity'
 copy_gems

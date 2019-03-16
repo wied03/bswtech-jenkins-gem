@@ -10,7 +10,6 @@ require 'bsw_tech/jenkins_gem/gem_hpi'
 require 'zip'
 require 'tmpdir'
 require 'tempfile'
-require 'gemfury'
 
 module BswTech
   module JenkinsGem
@@ -24,12 +23,23 @@ module BswTech
         raise 'Set the INDEX_DIRECTORY ENV variable' unless @index_dir
         # Indexer looks here
         @gems_dir = File.join(@index_dir, 'gems')
-        @api_key = ENV['GEMFURY_API_KEY']
-        raise 'Set the GEMFURY_API_KEY ENV variable' unless @api_key
+        @queue_file = File.join(@index_dir, 'fury_files.txt')
+        FileUtils.rm_rf @queue_file if File.exist?(@queue_file)
         @cert_path = ENV['GEM_CERTIFICATE_PATH']
         fail 'Set the GEM_CERTIFICATE_PATH ENV variable' unless @cert_path && File.exists?(@cert_path)
         @private_key_path = ENV['GEM_PRIVATE_KEY_PATH']
         fail 'Set the GEM_PRIVATE_KEY_PATH ENV variable' unless @private_key_path && File.exists?(@private_key_path)
+      end
+
+      def add_to_fury_queue(gem_path)
+        unless File.exist?(@queue_file)
+          puts 'Initializing Fury upload queue file...'
+          FileUtils.touch @queue_file
+        end
+        # avoid flush issues
+        File.open(@queue_file, 'a') do |file|
+          file.puts gem_path
+        end
       end
 
       get '/quick/Marshal.4.8/:rz_file' do |rz_file|
@@ -47,23 +57,22 @@ module BswTech
         gem = ::Gem::Package.new path
         spec = gem.spec
         hpi_util = BswTech::JenkinsGem::GemHpi.new(path, @cert_path, @private_key_path)
+        new_gem = false
         unless spec.name.include?(BswTech::JenkinsGem::GemBuilder::JENKINS_CORE_PACKAGE)
           # Files might already be there
-          hpi_util.merge_hpi unless spec.files.any?
+          unless spec.files.any?
+            hpi_util.merge_hpi
+            new_gem = true
+          end
         end
         unless spec.cert_chain.any?
           puts "Signing gem #{path}"
           hpi_util.sign_gem
+          new_gem = true
         end
-        fury_client = Gemfury::Client.new user_api_key: @api_key
-        existing_versions = begin
-          fury_client.versions(spec.name)
-        rescue Gemfury::NotFound
-          []
-        end
-        unless existing_versions.find {|listing| listing['version'] == spec.version.to_s}
-          puts "Uploading #{path} to Gemfury..."
-          fury_client.push_gem File.new(path)
+        if new_gem
+          puts "Adding #{path} to Fury queue file"
+          add_to_fury_queue path
         end
         File.open(path, 'rb')
       end
