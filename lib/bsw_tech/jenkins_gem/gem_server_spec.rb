@@ -50,7 +50,7 @@ describe 'GEM Server' do
   end
 
   describe 'individual GEM metadata' do
-    subject {get '/quick/Marshal.4.8/jenkins-plugin-proxy-git-3.8.0.gemspec.rz'}
+    subject {get '/quick/Marshal.4.8/jenkins-plugin-proxy-git-3.9.3.gemspec.rz'}
 
     its(:ok?) {is_expected.to eq true}
   end
