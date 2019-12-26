@@ -9,6 +9,7 @@ require 'bsw_tech/jenkins_gem/gem_server'
 
 describe 'GEM Server' do
   include Rack::Test::Methods
+  let(:git_plugin_version) { '4.0.0'}
 
   before(:context) {FileUtils.rm_rf index_directory}
   after(:context) {FileUtils.rm_rf index_directory}
@@ -34,7 +35,7 @@ describe 'GEM Server' do
   end
 
   describe 'individual GEM metadata' do
-    subject {get '/quick/Marshal.4.8/jenkins-plugin-proxy-git-3.9.3.gemspec.rz'}
+    subject {get "/quick/Marshal.4.8/jenkins-plugin-proxy-git-#{git_plugin_version}.gemspec.rz"}
 
     its(:ok?) {is_expected.to eq true}
   end
@@ -52,7 +53,7 @@ describe 'GEM Server' do
 
     describe 'Jenkins core and Git' do
       before {
-        get '/gems/jenkins-plugin-proxy-git-3.9.3.gem'
+        get "/gems/jenkins-plugin-proxy-git-#{git_plugin_version}.gem"
       }
       let(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.164.1.gem'}
 
@@ -67,7 +68,7 @@ describe 'GEM Server' do
         puts gem
         lines = File.readlines File.join(index_directory, 'fury_files.txt')
         expect(lines.length).to eq 2
-        expect(lines[0].strip).to end_with 'jenkins-plugin-proxy-git-3.9.3.gem'
+        expect(lines[0].strip).to end_with "jenkins-plugin-proxy-git-#{git_plugin_version}.gem"
         expect(lines[1].strip).to end_with 'jenkins-plugin-proxy-jenkins-core-2.164.1.gem'
       end
     end
