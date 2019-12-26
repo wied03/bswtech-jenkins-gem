@@ -23,7 +23,7 @@ node('docker.build') {
         userRemoteConfigs: scm.userRemoteConfigs
       ])
 
-      dockerImage = "quay.io/brady/bswtech-docker-ruby:${readFile('.ruby-version').trim()}.6"
+      dockerImage = "quay.io/brady/bswtech-docker-ruby:${readFile('.ruby-version').trim()}"
     }
 
     stage('Docker Pull') {
