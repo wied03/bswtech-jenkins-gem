@@ -20,7 +20,7 @@ begin
   puts "Removing existing index directory..."
   FileUtils.rm_rf INDEX_DIRECTORY
   puts 'Running bundle update...'
-  Bundler.with_clean_env do
+  Bundler.with_unbundled_env do
   policy_not_set = `bundle config trust-policy`.include?('You have not configured a value')
     if policy_not_set
       puts "Setting high security mode since bundle update does not support trust-policy command line switch"

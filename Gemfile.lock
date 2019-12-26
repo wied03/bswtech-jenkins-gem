@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bswtech-jenkins-gem (1.0.29)
+    bswtech-jenkins-gem (1.0.25)
       gemfury (~> 0.7)
       rubyzip (~> 1.2)
       sinatra (~> 2.0)
@@ -71,4 +71,4 @@ DEPENDENCIES
   rspec-its
 
 BUNDLED WITH
-   1.16.1
+   2.1.2

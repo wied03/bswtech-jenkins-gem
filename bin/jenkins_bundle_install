@@ -7,7 +7,7 @@ require 'rake'
 ENV['PLUGIN_DEST_DIR'] = 'plugins_final'
 
 puts 'Running bundle install...'
-Bundler.with_clean_env do
+Bundler.with_unbundled_env do
   sh 'bundle install --trust-policy HighSecurity'
 end
 copy_gems
