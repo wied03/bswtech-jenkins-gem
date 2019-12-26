@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--inline-source' << '--line-numbers'
   s.author = 'Brady Wied'
   s.email = 'brady@bswtechconsulting.com'
-  s.add_runtime_dependency 'rubyzip', '~> 1.2'
+  s.add_runtime_dependency 'rubyzip', '>= 1.2', '< 3.0'
   s.add_runtime_dependency 'sinatra', '~> 2.0'
   s.add_runtime_dependency 'gemfury', '~> 0.7'
   s.executables << 'jenkins_bundle_install'
