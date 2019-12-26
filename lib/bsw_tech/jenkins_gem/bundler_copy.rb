@@ -16,7 +16,7 @@ def copy_gems
     gem_spec = YAML.load s.to_yaml
     jenkins_name = gem_spec.metadata[BswTech::JenkinsGem::GemBuilder::METADATA_JENKINS_NAME]
     source_path = s.full_gem_path
-    dest_path = File.join(dir, "#{jenkins_name}.hpi")
+    dest_path = File.join(dir, "#{jenkins_name}.jpi")
     FileUtils.cp_r(source_path, dest_path)
     # Jenkins insists on this timestamp file
     FileUtils.touch File.join(dest_path, '.timestamp2')
