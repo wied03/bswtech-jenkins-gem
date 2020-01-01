@@ -30,6 +30,7 @@ node('docker.build') {
       docker.image(dockerImage)
     }
 
+    // now our build agents do not run as root but we need root in the container
     docker.image(dockerImage).inside('-u root') {
       stage('Dependencies') {
         sh 'bundle install'
