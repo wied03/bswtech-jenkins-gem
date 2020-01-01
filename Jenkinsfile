@@ -30,7 +30,7 @@ node('docker.build') {
       docker.image(dockerImage)
     }
 
-    docker.image(dockerImage).withRun('-u root') {
+    docker.image(dockerImage).withRun('-u root').inside {
       stage('Dependencies') {
         sh 'bundle install'
         def builtVersion = ruby.rake('dump_version', true, true)
